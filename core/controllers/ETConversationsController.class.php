@@ -36,12 +36,15 @@ public function action_index($channelSlug = false)
 	$curChannel = false;
 
 	// If channels have been selected, use the first of them.
-	if (count($currentChannels)) $curChannel = $channelInfo[$currentChannels[0]];
+	if (count($currentChannels)) {
+		$curChannel = $channelInfo[$currentChannels[0]];
+		$cParentId = $curChannel["parentId"];
+	}
 
 	// If the currently selected channel has no children, or if we're not including descendants, use
 	// its parent as the parent channel.
 	if (($curChannel and $curChannel["lft"] >= $curChannel["rgt"] - 1) or !$includeDescendants)
-		$curChannel = @$channelInfo[$curChannel["parentId"]];
+		if ($cParentId) $curChannel = $channelInfo[$cParentId];
 
 	// If no channel is selected, make a faux parent channel.
 	if (!$curChannel) $curChannel = array("lft" => 0, "rgt" => PHP_INT_MAX, "depth" => -1);

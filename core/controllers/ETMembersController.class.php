@@ -96,7 +96,8 @@ public function action_index($orderBy = false, $start = 0)
 	);
 
 	// If an invalid orderBy key was provided, just use the first one.
-	if (!isset($orders[$orderBy])) $orderBy = reset(array_keys($orders));
+	$key = array_keys($orders);
+	if (!isset($orders[$orderBy])) $orderBy = reset($key);
 
 	// Work out where to start the results from.
 	$page = 0;

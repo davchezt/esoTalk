@@ -356,7 +356,8 @@ public function action_start($member = false)
 	// Get a list of channels so that we can check to make sure a valid channel is selected.
 	$channels = ET::channelModel()->get("start");
 	$channelId = $form->validPostBack("content") ? ET::$session->get("channelId") : ET::$session->get("searchChannelId");
-	ET::$session->store("channelId", isset($channels[$channelId]) ? $channelId : reset(array_keys($channels)));
+	$key = array_keys($channels);
+	ET::$session->store("channelId", isset($channels[$channelId]) ? $channelId : reset($key));
 
 	// Get an empty conversation.
 	$model = ET::conversationModel();
