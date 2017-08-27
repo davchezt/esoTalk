@@ -205,7 +205,8 @@ public function login($name, $password, $remember = false)
 		->where("m.username=:username OR m.email=:email")
 		->bind(":username", $name)
 		->bind(":email", $name);
-	$member = reset(ET::memberModel()->getWithSQL($sql));
+	$arr = ET::memberModel()->getWithSQL($sql);
+	$member = reset($arr);
 
 	// Check that the password is correct.
 	if (!$member or !ET::memberModel()->checkPassword($password, $member["password"])) {
