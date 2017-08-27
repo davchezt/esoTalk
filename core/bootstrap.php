@@ -28,7 +28,7 @@ if (!defined("IN_ESOTALK")) exit;
 // By default, only display important errors (no warnings or notices.)
 ini_set("display_errors", "On");
 error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR);
-
+//error_reporting(E_ALL);
 // Make sure a default timezone is set... silly PHP 5.
 if (ini_get("date.timezone") == "") date_default_timezone_set("GMT");
 
@@ -50,7 +50,21 @@ function errorHandler($code, $message, $file, $line)
 
 	ET::fatalError(new ErrorException($message, $code, 1, $file, $line));
 }
-set_error_handler("errorHandler", E_USER_ERROR);
+function fatalError()
+{
+	$e = error_get_last();
+	if ($e !== null && (error_reporting() & $e['type']) !== 0) {
+		ET::fatalError(new ErrorException($e['message'], $e['type'], 0, $e['file'], $e['line']));
+	}
+}
+register_shutdown_function("fatalError");
+set_error_handler("errorHandler", E_USER_ERROR); // E_USER_ERROR | E_WARNING
+if (PHP_MAJOR_VERSION >= 7) {
+    set_error_handler(function ($errno, $errstr) {
+       return strpos($errstr, 'Declaration of') === 0;
+    }, E_WARNING);
+}
+//set_error_handler("errorHandler");
 set_exception_handler(array("ET", "fatalError"));
 
 // Determine the relative path to this forum. For example, if the forum is at http://forum.com/test/forum/,
@@ -83,7 +97,8 @@ if (PATH_CONFIG != PATH_ROOT."/config" and file_exists($file = PATH_ROOT."/confi
 if (file_exists($file = PATH_CONFIG."/config.php")) ET::loadConfig($file);
 
 // In debug mode, show all errors (except for strict standards).
-if (C("esoTalk.debug")) error_reporting(E_ALL & ~E_STRICT);
+//if (C("esoTalk.debug")) error_reporting(E_ALL & ~E_STRICT);
+if (C("esoTalk.debug")) error_reporting(E_ALL);
 
 // Do we want to force HTTPS?
 if (C("esoTalk.https") and (!array_key_exists("HTTPS", $_SERVER) or $_SERVER["HTTPS"] != "on")) {
@@ -324,7 +339,6 @@ if (!C("esoTalk.gzipOutput") or C("esoTalk.debug") or !ob_start("ob_gzhandler"))
 // Dispatch request information to the controller. The controller will then call the appropriate function which
 // will in turn render the page.
 ET::$controller->dispatch(ET::$controller->controllerMethod, $arguments);
-
 ob_end_flush();
 
 

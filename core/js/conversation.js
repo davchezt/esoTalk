@@ -93,7 +93,7 @@ init: function() {
 
 		// Store the conversation title and add a click handler to edit it.
 		this.title = $("#conversationTitle a").text() || $("#conversationTitle").text();
-		$(document).on("click", "#conversationTitle a", function(e) {
+		$("#conversationTitle a").live("click", function(e) {
 			e.preventDefault();
 			ETConversation.editTitle();
 		});
@@ -450,7 +450,7 @@ saveDraft: function() {
 // Discard a draft.
 discardDraft: function() {
 
-	if (!confirm(T("message.confirmDelete"))) return;
+	if (!confirm(T("message.confirmDiscardPost"))) return;
 
 	// Disable the beforeUnload confirmation prompt, because the ajax request we make may
 	// redirect us back to the home page.
@@ -526,32 +526,32 @@ initPosts: function() {
 	$("#conversationPosts .online").tooltip({alignment: "left", offset: [-9, 0], className: "withArrow withArrowBottom"}).css("cursor", "pointer");
 
 	// Add click handlers to the post controls.
-	$(document).on("click", "#conversationPosts .controls .control-edit", function(e) {
+	$("#conversationPosts .controls .control-edit").live("click", function(e) {
 		var postId = $(this).parents(".post").data("id");
 		ETConversation.editPost(postId);
 		e.preventDefault();
 	});
 
-	$(document).on("click", "#conversationPosts .controls .control-delete", function(e) {
+	$("#conversationPosts .controls .control-delete").live("click", function(e) {
 		var postId = $(this).parents(".post").data("id");
 		ETConversation.deletePost(postId);
 		e.preventDefault();
 	});
 
-	$(document).on("click", "#conversationPosts .controls .control-restore", function(e) {
+	$("#conversationPosts .controls .control-restore").live("click", function(e) {
 		var postId = $(this).parents(".post").data("id");
 		ETConversation.restorePost(postId);
 		e.preventDefault();
 	});
 
-	$(document).on("click", "#conversationPosts .post:not(.edit) .controls .control-quote", function(e) {
+	$("#conversationPosts .post:not(.edit) .controls .control-quote").live("click", function(e) {
 		var postId = $(this).parents(".post").data("id");
 		ETConversation.quotePost(postId, e.shiftKey);
 		e.preventDefault();
 	});
 
 	// Add a click handler to any "post links" to scroll back up to the right post, if it's loaded.
-	$(document).on("click", "#conversationPosts .postBody a[rel=post]", function(e) {
+	$("#conversationPosts .postBody a[rel=post]").live("click", function(e) {
 		var id = $(this).data("id");
 
 		$("#conversationPosts .post").each(function() {
@@ -595,6 +595,9 @@ collapseQuotes: function(items) {
 highlightPost: function(post) {
 	$("#conversationPosts .post.highlight").removeClass("highlight");
 	$(post).addClass("highlight");
+	setTimeout(function() {
+		$(post).removeClass("highlight");
+	}, 2000);
 },
 
 // Hide consecutive avatars from the same member.
@@ -845,8 +848,7 @@ initMembersAllowed: function() {
 	});
 
 	// Add click handlers to each of the names, to remove them.
-	var selector = "#membersAllowedSheet .allowedList .name a";
-	$(document).off("click", selector).on("click", selector, function(e) {
+	$("#membersAllowedSheet .allowedList .name a").die("click").live("click", function(e) {
 		e.preventDefault();
 		ETConversation.removeMember($(this).data("type"), $(this).data("id"));
 	});

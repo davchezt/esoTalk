@@ -46,9 +46,6 @@ public function __construct()
  */
 public function create(&$values)
 {
-	// Trim the username.
-	$values["username"] = trim($values["username"]);
-
 	// Validate the username, email, and password.
 	$this->validate("username", $values["username"], array($this, "validateUsername"));
 	$this->validate("email", $values["email"], array($this, "validateEmail"));
@@ -104,10 +101,8 @@ public function create(&$values)
  */
 public function update($values, $wheres = array())
 {
-	if (isset($values["username"])) {
-		$values["username"] = trim($values["username"]);
+	if (isset($values["username"]))
 		$this->validate("username", $values["username"], array($this, "validateUsername"));
-	}
 
 	if (isset($values["email"]))
 		$this->validate("email", $values["email"], array($this, "validateEmail"));
@@ -166,7 +161,11 @@ public function getWithSQL($sql)
  */
 public function getById($memberId)
 {
-	return reset($this->get(array("m.memberId" => $memberId)));
+	// var_dump($this->get(array("m.memberId" => $memberId)));
+	$arr = $this->get(array("m.memberId" => $memberId));
+	// var_dump(reset($arr));
+	return reset($arr);
+
 }
 
 
@@ -249,8 +248,7 @@ public function validateUsername($username, $checkForDuplicate = true)
 	if (in_array(strtolower($username), self::$reservedNames)) return "nameTaken";
 
 	// Make sure the username is not too small or large.
-	$length = mb_strlen($username, "UTF-8");
-	if ($length < 3 or $length > 20) return "invalidUsername";
+	if (strlen($username) < 3 or strlen($username) > 20) return "invalidUsername";
 
 	// Make sure there's no other member with the same username.
 	if ($checkForDuplicate and ET::SQL()->select("1")->from("member")->where("username=:username")->bind(":username", $username)->exec()->numRows())
@@ -372,17 +370,20 @@ public function setGroups($member, $account, $groups = array())
 
 	// Insert new member-group associations.
 	$inserts = array();
-	foreach ($groups as $id) $inserts[] = array($member["memberId"], $id);
-	if (count($inserts))
+	foreach ($groups as $id)
+		$inserts[] = array($member["memberId"], $id);
+	if (count($inserts)) {
 		ET::SQL()
 			->insert("member_group")
 			->setMultiple(array("memberId", "groupId"), $inserts)
 			->exec();
-
+	}
 	// Now we need to create a new activity item, and to do that we need the names of the member's groups.
 	$groupData = ET::groupModel()->getAll();
 	$groupNames = array();
-	foreach ($groups as $id) $groupNames[$id] = $groupData[$id]["name"];
+	foreach ($groups as $id) {
+		if (!$id == '') $groupNames[$id] = $groupData[$id]["name"];
+	}
 
 	ET::activityModel()->create("groupChange", $member, ET::$session->user, array("account" => $account, "groups" => $groupNames));
 

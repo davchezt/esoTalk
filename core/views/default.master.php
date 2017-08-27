@@ -3,7 +3,6 @@
 // This file is part of esoTalk. Please see the included license file for usage information.
 
 if (!defined("IN_ESOTALK")) exit;
-
 /**
  * Default master view. Displays a HTML template with a header and footer.
  *
@@ -24,7 +23,7 @@ if (!defined("IN_ESOTALK")) exit;
 <div id='messages'>
 <?php foreach ($data["messages"] as $message): ?>
 <div class='messageWrapper'>
-<div class='message <?php echo $message["className"]; ?>' data-id='<?php echo @$message["id"]; ?>'><?php echo $message["message"]; ?></div>
+<div class='message <?php echo $message["className"]; ?>' data-id='<?php echo isset($message["id"]) ? $message["id"]:'0'; ?>'><?php echo $message["message"]; ?></div>
 </div>
 <?php endforeach; ?>
 </div>

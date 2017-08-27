@@ -176,7 +176,7 @@ public static function first($event, $parameters = array())
  */
 public static function checkForUpdates()
 {
-	$json = @file_get_contents("http://esotalk.org/versions.json");
+	$json = @file_get_contents(C("esoTalk.baseURL") . "versions.json");
 	$packages = json_decode($json, true);
 
 	// Compare the installed version and the latest version. Show a message if there is a new version.
@@ -493,6 +493,19 @@ public static function uploader()
  */
 public static function fatalError($exception)
 {
+	$levels = array (        
+		E_ERROR             => 'Fatal Error',
+		E_PARSE             => 'Parse Error',
+		E_COMPILE_ERROR     => 'Compile Error',
+		E_COMPILE_WARNING   => 'Compile Warning',
+		E_STRICT            => 'Strict Mode Error',
+		E_NOTICE            => 'Notice',
+		E_WARNING           => 'Warning',
+		E_RECOVERABLE_ERROR => 'Recoverable Error',        
+		E_USER_NOTICE       => 'Notice',
+		E_USER_WARNING      => 'Warning',
+		E_USER_ERROR        => 'Error',
+	);
 	// Get the information about the exception.
 	$errorNumber = $exception->getCode();
 	$message = $exception->getMessage();
@@ -500,11 +513,13 @@ public static function fatalError($exception)
 	$line = $exception->getLine();
 	$backtrace = $exception->getTrace();
 
+	$typeError = in_array($errorNumber, array_keys($levels)) ? $levels[$errorNumber] : 'Unknown Error';
+
 	// Use the controller's response type, or just use the default one.
 	$responseType = (self::$controller and self::$controller->responseType) ? self::$controller->responseType : RESPONSE_TYPE_DEFAULT;
 
 	// Clean the output buffer and send headers if possible.
-	@ob_end_clean();
+	while(ob_get_level() > 0) ob_end_clean(); // @ob_end_clean();
 	if (!headers_sent()) {
 		header("HTTP/1.0 500 Internal Server Error");
 		header("Content-Type: text/html; charset=utf-8");
@@ -514,8 +529,16 @@ public static function fatalError($exception)
 	if (is_string($file) and is_numeric($line) and file_exists($file)) $errorLines = file($file);
 	else $errorLines = false;
 
+	// Write Log file
+	if (is_array($errorLines) and $line > -1) {
+		self::writeLog("{$typeError}: {$message} in {$file} at line {$line} - " . trim($errorLines[$line - 1]));
+	}
+	else {
+		self::writeLog("{$typeError}: {$message} in {$file} at line {$line}");
+	}
+	
 	$data = array();
-	$data["pageTitle"] = T("Fatal Error");
+	$data["pageTitle"] = T("Fatal Error") . ' | ' .$typeError;
 
 	// Render the view into $data["content"], so it will be outputted within the master view.
 	ob_start();
@@ -524,6 +547,7 @@ public static function fatalError($exception)
 	ob_end_clean();
 
 	// Render the master view, or just output the content if we can't find one.
+	while(ob_get_level() > 0) ob_end_clean(); // @ob_end_clean();
 	if ($responseType === RESPONSE_TYPE_DEFAULT and file_exists($view = PATH_VIEWS."/message.master.php"))
 		include $view;
 	else
@@ -532,6 +556,10 @@ public static function fatalError($exception)
 	exit;
 }
 
+public static function writeLog($message)
+{
+	return (bool) file_put_contents(rtrim(PATH_CACHE, '/') . '/' . gmdate('Y_m_d') . '.log', '[' . gmdate('d-M-Y H:i:s') . '] ' . $message . PHP_EOL, FILE_APPEND);
+}
 
 /**
  * Render a "404 Not Found" error.

@@ -55,6 +55,10 @@ public function action_index()
 	$this->action_general();
 }
 
+public function get_profile($pane = "")
+{
+	return $this->profile($pane);
+}
 
 /**
  * Set up data and menus that are needed to render the member profile view.
@@ -62,7 +66,7 @@ public function action_index()
  * @param string $pane The name of the active pane.
  * @return array The member details.
  */
-public function profile($pane = "")
+protected function profile($pane = "")
 {
 	// Set the page title.
 	$this->title = T("Settings");
@@ -362,6 +366,12 @@ public function saveBoolPreference($form, $key, &$preferences)
  */
 public function saveAvatar($form, $key, &$preferences)
 {
+// Avatar dimensions (in pixels)
+//$config["esoTalk.avatars.width"] = 64;
+//$config["esoTalk.avatars.height"] = 64;
+//$config["esoTalk.avatars.thumbWidth"] = 20;
+//$config["esoTalk.avatars.thumbHeight"] = 20;
+
 	if (empty($_FILES[$key]["tmp_name"])) return;
 
 	$uploader = ET::uploader();
