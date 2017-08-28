@@ -161,9 +161,7 @@ public function getWithSQL($sql)
  */
 public function getById($memberId)
 {
-	// var_dump($this->get(array("m.memberId" => $memberId)));
 	$arr = $this->get(array("m.memberId" => $memberId));
-	// var_dump(reset($arr));
 	return reset($arr);
 
 }
