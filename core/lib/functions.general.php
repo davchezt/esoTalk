@@ -223,7 +223,6 @@ function sendEmail($to, $subject, $body)
 	$mail->SetFrom(C("esoTalk.emailFrom"), sanitizeForHTTP(C("esoTalk.forumTitle")));
 	$mail->Subject = sanitizeForHTTP($subject);
 	$mail->Body = $body;
-	$mail->Encoding = 'quoted-printable';
 
 	return $mail->Send();
 }
@@ -457,9 +456,9 @@ function slug($string)
 	ET::trigger("slug", array(&$string));
 
 	// Now replace non-alphanumeric characters with a hyphen, and remove multiple hyphens.
-	$slug = mb_strtolower(trim(preg_replace(array("/[^0-9a-z]/i", "/-+/"), "-", $string), "-"), "UTF-8");
+	$slug = strtolower(trim(preg_replace(array("/[^0-9a-z]/i", "/-+/"), "-", $string), "-"));
 
-	return mb_substr($slug, 0, 63, "UTF-8");
+	return substr($slug, 0, 63);
 }
 
 
@@ -1070,4 +1069,26 @@ function addToArrayString(&$array, $key, $value, $position = false)
 
 	// Combine the new keys/values!
 	$array = array_combine($keys, $values);
+}
+
+
+
+if (function_exists("lcfirst") === false) {
+ 
+/**
+ * Make a string's first character lowercase.
+ * 
+ * NOTE: Is included in PHP 5 >= 5.3.0
+ * 
+ * @param string $str The input string.
+ * @return string 
+ *
+ * @package esoTalk
+ */
+function lcfirst($str)
+{
+	$str[0] = strtolower($str[0]);
+	return $str;
+}
+
 }

@@ -12,7 +12,7 @@ if (!defined("IN_ESOTALK")) exit;
  */
 
 // The version of the code.
-define("ESOTALK_VERSION", "1.0.0g5");
+define("ESOTALK_VERSION", "1.0.0g4");
 
 // Define response type constants.
 if (!defined("RESPONSE_TYPE_DEFAULT")) define("RESPONSE_TYPE_DEFAULT", "default");
@@ -48,7 +48,7 @@ $config["esoTalk.database.characterEncoding"] = "utf8";
 $config["esoTalk.database.connectionOptions"] = array(
 	PDO::ATTR_PERSISTENT => false,
 	1000 => true, // PDO::MYSQL_ATTR_USE_BUFFERED_QUERY is missing in some PHP installations
-	1002 => "SET NAMES 'utf8'" // PDO::MYSQL_ATTR_INIT_COMMAND is missing in some PHP installations
+	1002 => "SET sql_mode='TRADITIONAL', NAMES 'utf8'", // PDO::MYSQL_ATTR_INIT_COMMAND is missing in some PHP installations
 );
 
 // Basic forum details.
@@ -59,7 +59,7 @@ $config["esoTalk.baseURL"] = "";
 $config["esoTalk.resourceURL"] = ""; // URL used for all resources (CSS+JS+images, including those from plugins and skins.) If blank, the base URL will be used.
 $config["esoTalk.rootAdmin"] = 1; // The member ID of the root administrator.
 $config["esoTalk.emailFrom"] = ""; // The email address to send forum emails (notifications etc.) from.
-$config["esoTalk.debug"] = false; // Debug mode will show advanced information in errors. Turn this off in production.
+$config["esoTalk.debug"] = true; // Debug mode will show advanced information in errors. Turn this off in production.
 $config["esoTalk.aggregateCSS"] = true;
 $config["esoTalk.aggregateJS"] = true;
 $config["esoTalk.gzipOutput"] = true; // Whether or not to compress the page output with gzip.
@@ -79,7 +79,6 @@ $config["esoTalk.enabledPlugins"] = array("BBCode", "Emoticons"); // A list of e
 
 // Login and registration settings.
 $config["esoTalk.badLoginsPerMinute"] = 10;
-$config["esoTalk.enablePersistenceCookies"] = false;
 $config["esoTalk.registration.open"] = true;
 $config["esoTalk.registration.requireConfirmation"] = "email"; // false | "email" = require email confirmation | "approval" = require admin approval
 

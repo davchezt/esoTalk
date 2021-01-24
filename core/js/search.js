@@ -28,8 +28,8 @@ init: function() {
 	ETSearch.formInput = $("#search .text");
 	ETSearch.formReset = $("#search .control-reset");
 
-	new ETAutoCompletePopup(ETSearch.formInput, "author:", null, "memberId");
-	new ETAutoCompletePopup(ETSearch.formInput, "contributor:", null, "memberId");
+	new ETAutoCompletePopup(ETSearch.formInput, "author:");
+	new ETAutoCompletePopup(ETSearch.formInput, "contributor:");
 
 	// Make the controls into a popup button.
 	if ($("#searchControls").length) {
@@ -143,7 +143,7 @@ init: function() {
 	});
 
 	// Save the scroll position and the conversation ID whenever a conversation link is clicked on.
-	$(document).on("click", "#conversations a", function() {
+	$("#conversations a").live("click", function() {
 		$.cookie("scrollTop", $(document).scrollTop(), {path: "/"});
 		$.cookie("cid", ETSearch.getConversationIdForElement(this), {path: "/"});
 	});
@@ -159,14 +159,14 @@ init: function() {
 	}, 1);
 
 	// Add click handlers to the unread indicators.
-	$(document).on("click", "#conversations .unreadIndicator", function(e) {
+	$("#conversations .unreadIndicator").live("click", function(e) {
 		e.preventDefault();
 		ETSearch.markAsRead(ETSearch.getConversationIdForElement(this));
 		$.hideToolTip();
 	});
 
 	// Add click handlers to the channels.
-	$(document).on("click", "#conversations .channel", function(e) {
+	$("#conversations .channel").live("click", function(e) {
 		ETSearch.changeChannel($(this).data("channel"));
 		e.preventDefault();
 	});
@@ -175,24 +175,24 @@ init: function() {
 	ETSearch.initSearchResults();
 
 	// Add a click handler to the mark all as read button.
-	$(document).on("click", "#control-markAllAsRead", function(e) {
+	$("#control-markAllAsRead").live("click", function(e) {
 		e.preventDefault();
 		ETSearch.currentSearch = "";
 		ETSearch.changeChannel("all", false, true);
 	});
-	$(document).on("click", "#control-markListedAsRead", function(e) {
+	$("#control-markListedAsRead").live("click", function(e) {
 		e.preventDefault();
 		ETSearch.search(ETSearch.currentSearch, "markAsRead");
 	});
 
 	// Add a click handler to the view more button.
-	$(document).on("click", "#conversations .viewMore a", function(e) {
+	$("#conversations .viewMore a").live("click", function(e) {
 		e.preventDefault();
-		ETSearch.search(decodeURIComponent($(this).attr("href").split("search=")[1].replace(/\+/g, ' ')));
+		ETSearch.search(decodeURIComponent($(this).attr("href").split("?search=")[1].replace(/\+/g, ' ')));
 	});
 
 	// Add click handlers to the channels.
-	$(document).on("click", "#channels a:not(.channel-list)", function(e) {
+	$("#channels a:not(.channel-list)").live("click", function(e) {
 		if (e.metaKey || e.ctrlKey) return;
 		e.preventDefault();
 		ETSearch.changeChannel($(this).data("channel"), e.shiftKey);

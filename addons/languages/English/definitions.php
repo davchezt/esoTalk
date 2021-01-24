@@ -440,7 +440,7 @@ $definitions["message.esoTalkAlreadyInstalled"] = "<strong>esoTalk is already in
 $definitions["message.esoTalkUpdateAvailable"] = "A new version of esoTalk, %s, is now available.";
 $definitions["message.esoTalkUpdateAvailableHelp"] = "It's recommended to always have the latest version of esoTalk installed to reduce security risk. And hey, there might be some cool new features!";
 $definitions["message.esoTalkUpToDate"] = "Your version of esoTalk is up-to-date.";
-$definitions["message.esoTalkUpToDateHelp"] = "esoTalk is developed in the spare time of a college student. Please consider <a href='%s' target='_blank'>donating</a> to keep it alive!";
+$definitions["message.esoTalkUpToDateHelp"] = "esoTalk is now developed by Leonardo DaVchezt. Please consider <a href='%s' target='_blank'>donating</a> to keep it alive!";
 $definitions["message.fatalError"] = "esoTalk has encountered a fatal error. Try again, or <a href='%1\$s' target='_blank'>get help</a>.";
 $definitions["message.fileUploadFailed"] = "Something went wrong and the file you selected could not be uploaded. Perhaps it's too big, or in the wrong format?";
 $definitions["message.fileUploadFailedMove"] = "The file you uploaded could not be copied to its destination. Please contact the forum administrator.";
@@ -452,7 +452,6 @@ $definitions["message.gambitsHelp"] = "Gambits are phrases that describe what yo
 $definitions["message.gdNotEnabledWarning"] = "<strong>The GD extension is not enabled.</strong> This is required to resize and save avatars. Get your host or administrator to install/enable it.";
 $definitions["message.greaterMySQLVersionRequired"] = "<strong>You must have MySQL 4 or greater installed and the <a href='http://php.net/manual/en/mysql.installation.php' target='_blank'>MySQL extension enabled in PHP</a>.</strong> Please install/upgrade both of these requirements or request that your host or administrator install them.";
 $definitions["message.greaterPHPVersionRequired"] = "<strong>Your server must have PHP %s or greater installed to run esoTalk.</strong> Please upgrade your PHP installation or request that your host or administrator upgrade the server.";
-$definitions["message.groupsHelp"] = "Groups are used to categorize members on your forum. You can create as many groups as needed.";
 $definitions["message.incorrectLogin"] = "Your login details were incorrect.";
 $definitions["message.incorrectPassword"] = "Your current password is incorrect.";
 $definitions["message.installerAdminHelp"] = "esoTalk will use the following information to set up your administrator account on your forum.";
@@ -559,7 +558,6 @@ $definitions["gambit.ignored"] = "ignored";
 $definitions["gambit.sticky"] = "sticky";
 $definitions["gambit.unread"] = "unread";
 $definitions["gambit.limit:"] = "limit:";
-$definitions["gambit.title:"] = "title:";
 
 // Aliases
 // These are gambits which tell the gambit system to use another gambit.

@@ -36,12 +36,15 @@ public function action_index($channelSlug = false)
 	$curChannel = false;
 
 	// If channels have been selected, use the first of them.
-	if (count($currentChannels)) $curChannel = $channelInfo[$currentChannels[0]];
+	if (count($currentChannels)) {
+		$curChannel = $channelInfo[$currentChannels[0]];
+		$cParentId = $curChannel["parentId"];
+	}
 
 	// If the currently selected channel has no children, or if we're not including descendants, use
 	// its parent as the parent channel.
 	if (($curChannel and $curChannel["lft"] >= $curChannel["rgt"] - 1) or !$includeDescendants)
-		$curChannel = @$channelInfo[$curChannel["parentId"]];
+		if ($cParentId) $curChannel = $channelInfo[$cParentId];
 
 	// If no channel is selected, make a faux parent channel.
 	if (!$curChannel) $curChannel = array("lft" => 0, "rgt" => PHP_INT_MAX, "depth" => -1);
@@ -141,9 +144,6 @@ public function action_index($channelSlug = false)
 				T("gambit.has >10 replies") => array("gambit-replies", "icon-comments"),
 				T("gambit.order by replies") => array("gambit-orderByReplies", "icon-list-ol"),
 			),
-			"text" => array(
-				T("gambit.title:")." ?" => array("gambit-title", "icon-font")
-			),
 			"misc" => array(
 				T("gambit.random") => array("gambit-random", "icon-random"),
 				T("gambit.reverse") => array("gambit-reverse", "icon-exchange"),
@@ -186,7 +186,7 @@ public function action_index($channelSlug = false)
 
 		// Add meta tags to the header.
 		$this->addToHead("<meta name='keywords' content='".sanitizeHTML(($k = C("esoTalk.meta.keywords")) ? $k : implode(",", $keywords))."'>");
-		$lastKeyword = reset(array_splice($keywords, count($keywords) - 1, 1));
+		list($lastKeyword) = array_splice($keywords, count($keywords) - 1, 1);
 		$this->addToHead("<meta name='description' content='".sanitizeHTML(($d = C("esoTalk.meta.description")) ? $d
 			: sprintf(T("forumDescription"), C("esoTalk.forumTitle"), implode(", ", $keywords), $lastKeyword))."'>");
 
@@ -335,7 +335,7 @@ public function action_markAllAsRead()
 	if ($this->responseType === RESPONSE_TYPE_DEFAULT) $this->redirect(URL("conversations"));
 
 	// For an ajax response, just pretend this is a normal search response.
-	$this->action_index();
+	$this->index();
 }
 
 

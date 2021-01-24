@@ -149,8 +149,6 @@ public function joinUserData(&$channels)
 		return;
 	}
 
-	if (!count($channels)) return;
-
 	// Get the user data from the database for all channel IDs in the array.
 	$result = ET::SQL()
 		->select("*")

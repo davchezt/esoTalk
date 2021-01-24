@@ -83,15 +83,6 @@ foreach ($letters as $letter) {
 </fieldset>
 </form>
 
-<?php
-// Gambits
-if ($data["gambitsMenu"]->count()): ?>
-<div id='gambits'>
-<ul class='popupMenu'>
-<?php echo $data["gambitsMenu"]->getContents(); ?>
-</ul></div>
-<?php endif; ?>
-
 </div>
 
 <!-- Member List Body -->

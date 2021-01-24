@@ -45,8 +45,7 @@ public function action_name($name = "")
 	$result = ET::SQL()
 		->select("memberId, username")
 		->from("member")
-		->where("username LIKE :name")
-		->bind(":name", $name."%")
+		->where("username", $name)
 		->exec();
 
 	if ($row = $result->firstRow())
@@ -54,7 +53,7 @@ public function action_name($name = "")
 
 	// If we didn't find the member, run the index function with a false argument (which will in turn show
 	// a not found error.)
-	$this->action_index(false);
+	$this->index(false);
 }
 
 
@@ -299,7 +298,7 @@ public function action_permissions($memberId = "")
 	// Get the currently selected groups from the form input, and a list of collective group IDs.
 	$currentGroups = (array)$form->getValue("groups", array_keys($member["groups"]));
 	$groupIds = ET::groupModel()->getGroupIds($currentAccount, $currentGroups);
-
+		
 	// Get a list of all channels and their permissions, which we can use to construct a permissions grid.
 	$channels = ET::channelModel()->getAll();
 

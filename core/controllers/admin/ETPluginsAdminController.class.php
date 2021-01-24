@@ -196,7 +196,7 @@ public function action_uninstall($plugin = "")
 	if (file_exists($file = PATH_PLUGINS."/".sanitizeFileName($plugin)."/plugin.php")) include_once $file;
 	$className = "ETPlugin_$plugin";
 	if (class_exists($className)) {
-		$pluginObject = new $className;
+		$pluginObject = new $className("addons/plugins/".$plugin); // missing $path
 		$pluginObject->uninstall();
 	}
 

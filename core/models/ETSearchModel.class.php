@@ -715,16 +715,19 @@ public function gambitActive(&$search, $term, $negate)
  */
 public static function gambitAuthor(&$search, $term, $negate)
 {
-	// Get the ID of the member.
+	// Get the name of the member.
 	$term = trim(str_replace("\xc2\xa0", " ", substr($term, strlen(T("gambit.author:")))));
 
-	// Allow the user to refer to themselves using the "myself" keyword.
-	if ($term == T("gambit.myself")) $term = (int) ET::$session->userId;
+	// If the user is referring to themselves, then we already have their member ID.
+	if ($term == T("gambit.myself")) $q = (int)ET::$session->userId;
+
+	// Otherwise, make a query to find the member ID of the specified member name.
+	else {
+		$q = ET::SQL()->select("memberId")->from("member")->where("username=:username")->bind(":username", $term)->get();
+	}
 
 	// Apply the condition.
-	$search->sql
-		->where("c.startMemberId ".($negate ? "!=" : "=")." :authorId")
-		->bind(":authorId", (int) $term);
+	$search->sql->where("c.startMemberId".($negate ? " NOT" : "")." IN ($q)");
 }
 
 
@@ -736,18 +739,22 @@ public static function gambitAuthor(&$search, $term, $negate)
  */
 public static function gambitContributor(&$search, $term, $negate)
 {
-	// Get the ID of the member.
+	// Get the name of the member.
 	$term = trim(str_replace("\xc2\xa0", " ", substr($term, strlen(T("gambit.contributor:")))));
 
-	// Allow the user to refer to themselves using the "myself" keyword.
-	if ($term == T("gambit.myself")) $term = (int) ET::$session->userId;
+	// If the user is referring to themselves, then we already have their member ID.
+	if ($term == T("gambit.myself")) $q = (int)ET::$session->userId;
+
+	// Otherwise, make a query to find the member ID of the specified member name.
+	else {
+		$q = ET::SQL()->select("memberId")->from("member")->where("username=:username")->bind(":username", $term)->get();
+	}
 
 	// Apply the condition.
 	$sql = ET::SQL()
 		->select("DISTINCT conversationId")
 		->from("post")
-		->where("memberId = :contributorId")
-		->bind(":contributorId", (int) $term);
+		->where("memberId IN ($q)");
 	$search->addIDFilter($sql, $negate);
 }
 
@@ -873,21 +880,6 @@ public static function gambitLocked(&$search, $term, $negate)
 }
 
 
-/**
- * The "title" gambit callback. Applies a filter to fetch only conversation matching
- * the specified title.
- *
- * @see gambitUnread for parameter descriptions.
- */
-public static function gambitTitle(&$search, $term, $negate)
-{
-	$term = trim(substr($term, strlen(T("gambit.title:"))));
-
-	$search->sql->where("title ".($negate ? "NOT" : "")." LIKE :titleTerm")
-		->bind(":titleTerm", "%".$term."%");
-}
-
-
 }
 
 // Add default gambits.
@@ -906,7 +898,6 @@ ETSearchModel::addGambit('return $term == strtolower(T("gambit.order by newest")
 ETSearchModel::addGambit('return $term == strtolower(T("gambit.unread"));', array("ETSearchModel", "gambitUnread"));
 ETSearchModel::addGambit('return $term == strtolower(T("gambit.reverse"));', array("ETSearchModel", "gambitReverse"));
 ETSearchModel::addGambit('return strpos($term, strtolower(T("gambit.limit:"))) === 0;', array("ETSearchModel", "gambitLimit"));
-ETSearchModel::addGambit('return strpos($term, strtolower(T("gambit.title:"))) === 0;', array("ETSearchModel", "gambitTitle"));
 
 if (!C("esoTalk.search.disableRandomGambit"))
 	ETSearchModel::addGambit('return $term == strtolower(T("gambit.random"));', array("ETSearchModel", "gambitRandom"));

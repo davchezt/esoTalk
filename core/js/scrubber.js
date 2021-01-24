@@ -52,7 +52,7 @@ init: function() {
 
 			// If we've scrolled past this item, continue in the loop.
 			if (y > item.offset().top + item.outerHeight() - ETScrubber.header.outerHeight()) return true;
-			else if (item.data("index")) {
+			else {
 
 				// This must be the first item within our viewport. Get the index of it and highlight
 				// that index in the scrubber, then break out of the loop.
@@ -74,7 +74,7 @@ init: function() {
 
 	// Alright, so, all the scrolling event stuff is done! Now we need to make the "next/previous page" and
 	// "load more" blocks clickable.
-	$(ETScrubber.body).on("click", ".scrubberMore a", function(e) {
+	$(".scrubberMore a", ETScrubber.body).live("click", function(e) {
 		e.preventDefault();
 		$(this).parent().addClass("loading");
 		var moreItem = $(this).parent();

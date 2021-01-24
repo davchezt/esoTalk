@@ -108,6 +108,7 @@ public function action_info()
 	if ($form->isPostBack("submit")) {
 
 		$values = $form->getValues();
+		$confirmTablePrefix = isset($values["confirmTablePrefix"]) ? @$values["confirmTablePrefix"] : '';
 
 		// Make sure the title isn't empty.
 		if (!strlen($values["forumTitle"]))
@@ -130,7 +131,7 @@ public function action_info()
 		// Check to see if there are any conflicting tables already in the database.
 		// If there are, show an error with a hidden input. If the form is submitted again with this hidden input,
 		// proceed to perform the installation regardless.
-		if (!$form->errorCount() and $values["tablePrefix"] != @$values["confirmTablePrefix"]) {
+		if (!$form->errorCount() and $values["tablePrefix"] != @$confirmTablePrefix) {
 
 			// Get a list of all existing tables.
 			$theirTables = array();
@@ -298,7 +299,7 @@ protected function fatalChecks()
 	if (!version_compare(PHP_VERSION, "5.3.0", ">=")) $errors[] = sprintf(T("message.greaterPHPVersionRequired"), "5.3.0");
 
 	// Check for the MySQL extension.
-	if (!extension_loaded("mysql")) $errors[] = T("message.greaterMySQLVersionRequired");
+	if (!extension_loaded("mysqli")) $errors[] = T("message.greaterMySQLVersionRequired");
 
 	// Check file permissions.
 	$fileErrors = array();
