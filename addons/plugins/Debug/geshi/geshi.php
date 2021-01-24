@@ -429,7 +429,8 @@ class GeSHi {
      *               {@link GeSHi::set_language_path()}
      * @since 1.0.0
      */
-    function GeSHi($source, $language, $path = '') {
+    // function GeSHi($source, $language, $path = '') {
+    function __construct($source, $language, $path = '') {
         $this->set_source($source);
         $this->set_language_path($path);
         $this->set_language($language);
@@ -2132,7 +2133,7 @@ class GeSHi {
                             $styles = "/$k/";
                             if ($this->language_data['CASE_SENSITIVE'][$k]) {
                                 $stuff_to_parse = preg_replace(
-                                    "/([^a-zA-Z0-9\$_\|\#;>|^])($keyword)(?=[^a-zA-Z0-9_<\|%\-&])/e",
+                                    "/([^a-zA-Z0-9\$_\|\#;>|^])($keyword)(?=[^a-zA-Z0-9_<\|%\-&])/",
                                     "'\\1' . $func2('\\2', '$k', 'BEGIN') . '<|$styles>' . $func('\\2') . '|>' . $func2('\\2', '$k', 'END')",
                                     $stuff_to_parse
                                 );
@@ -2142,7 +2143,7 @@ class GeSHi {
                                 // hackage again... must... release... 1.2...
                                 if ('smarty' == $this->language) { $hackage = '\/'; } else { $hackage = ''; }
                                 $stuff_to_parse = preg_replace(
-                                    "/([^a-zA-Z0-9\$_\|\#;>$hackage|^])($keyword)(?=[^a-zA-Z0-9_<\|%\-&])/ie",
+                                    "/([^a-zA-Z0-9\$_\|\#;>$hackage|^])($keyword)(?=[^a-zA-Z0-9_<\|%\-&])/",
                                     "'\\1' . $func2('\\2', '$k', 'BEGIN') . '<|$styles>' . $func('\\2') . '|>' . $func2('\\2', '$k', 'END')",
                                     $stuff_to_parse
                                 );

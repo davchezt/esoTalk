@@ -63,46 +63,46 @@ public function handler_conversationController_getEditControls($sender, &$contro
  */
 public function handler_format_beforeFormat($sender)
 {
-	$hideBlock = create_function('&$blockFixedContents, $contents', '
+	/*$hideBlock = create_function('&$blockFixedContents, $contents', '
 		$blockFixedContents[] = $contents;
 		return "</p><pre></pre><p>";');
 	$hideInline = create_function('&$inlineFixedContents, $contents', '
 		$inlineFixedContents[] = $contents;
-		return "<code></code>";');
+		return "<code></code>";');*/
 
 	$this->blockFixedContents = array();
 	$this->inlineFixedContents = array();
 
-	$regexp = "/(.*)^\s*\[code\]\n?(.*?)\n?\[\/code]$/imse";
+	$regexp = "/(.*)^\s*\[code\]\n?(.*?)\n?\[\/code]$/ims";
 	while (preg_match($regexp, $sender->content)) {
 		if ($sender->inline) {
-			//$sender->content = preg_replace($regexp, "'$1' . \$hideInline(\$this->inlineFixedContents, '$2')", $sender->content);
-			$sender->content = preg_replace_callback('/(.*)^\s*\[code\]\n?(.*?)\n?\[\/code]$/ims', function($m) {
+			$sender->content = preg_replace($regexp, "'$1' . \$hideInline(\$this->inlineFixedContents, '$2')", $sender->content);
+			/*$sender->content = preg_replace_callback('/(.*)^\s*\[code\]\n?(.*?)\n?\[\/code]$/ims', function($m) {
 				$hideInline = create_function('&$inlineFixedContents, $contents', '
 					$inlineFixedContents[] = $contents;
 					return "<code></code>";');
 				return $m[1] . $hideInline($this->inlineFixedContents, $m[2]);
-			}, $sender->content);
+			}, $sender->content);*/
 		}
 		else {
-			//$sender->content = preg_replace($regexp, "'$1' . \$hideBlock(\$this->blockFixedContents, '$2')", $sender->content);
-			$sender->content = preg_replace_callback('/(.*)^\s*\[code\]\n?(.*?)\n?\[\/code]$/ims', function($m) {
+			$sender->content = preg_replace($regexp, "'$1' . \$hideBlock(\$this->blockFixedContents, '$2')", $sender->content);
+			/*$sender->content = preg_replace_callback('/(.*)^\s*\[code\]\n?(.*?)\n?\[\/code]$/ims', function($m) {
 				$hideBlock = create_function('&$blockFixedContents, $contents', '
 					$blockFixedContents[] = $contents;
 					return "</p><pre></pre><p>";');
 				return $m[1] . $hideBlock($this->blockFixedContents, $m[2]);
-			}, $sender->content);
+			}, $sender->content);*/
 		}
 	}
 
 	// Inline-level [fixed] tags will become <code>.
-	// $sender->content = preg_replace("/\[code\]\n?(.*?)\n?\[\/code]/ise", "\$hideInline(\$this->inlineFixedContents, '$1')", $sender->content);
-	$sender->content = preg_replace_callback("/\[code\]\n?(.*?)\n?\[\/code]/is", function ($m) {
+	$sender->content = preg_replace("/\[code\]\n?(.*?)\n?\[\/code]/is", "\$hideInline(\$this->inlineFixedContents, '$1')", $sender->content);
+	/*$sender->content = preg_replace_callback("/\[code\]\n?(.*?)\n?\[\/code]/is", function ($m) {
 		$hideInline = create_function('&$inlineFixedContents, $contents', '
 			$inlineFixedContents[] = $contents;
 			return "<code></code>";');
 		return $hideInline($this->inlineFixedContents, $m[1]);
-	}, $sender->content);
+	}, $sender->content);*/
 }
 
 

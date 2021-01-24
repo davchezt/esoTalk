@@ -203,7 +203,7 @@ public function links()
 		array($this, "linksCallback"), $this->content);
 
 	// Convert email links.
-	$this->content = preg_replace("/[\w-\.]+@([\w-]+\.)+[\w-]{2,4}/i", "<a href='mailto:$0' class='link-email'>$0</a>", $this->content);
+	// $this->content = preg_replace("/[\w-\.]+@([\w-]+\.)+[\w-]{2,4}/i", "<a href='mailto:$0' class='link-email'>$0</a>", $this->content);
 
 	return $this;
 }
@@ -259,9 +259,11 @@ public function lists()
 	//$orderedList = create_function('$list', '$list = preg_replace("/^[0-9]+[.)]\s+([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list)); return $list;');
 	//$this->content = preg_replace("/(?:^[0-9]+[.)]\s+([^\n]*)(?:\n|$)){2,}/me", "'</p><ol>'.\$orderedList('$0').'</ol><p>'", $this->content);
 	$this->content = preg_replace_callback("/(?:^[0-9]+[.)]\s+([^\n]*)(?:\n|$)){2,}/m", function($m) {
-		$orderedList = create_function('$list',
-		'$list = preg_replace("/^[0-9]+[.)]\s+([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list));
-		return $list;');
+		$orderedList = function($list) {
+            $list = preg_replace("/^[0-9]+[.)]\s+([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list));
+            
+    		return $list;
+        };
 		return '</p><ol>'.$orderedList($m[0]).'</ol><p>';
 	}, $this->content);
 
@@ -269,9 +271,12 @@ public function lists()
 	//$unorderedList = create_function('$list', '$list = preg_replace("/^ *[-*]\s*([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list)); return "$list";');
 	//$this->content = preg_replace("/(?:^ *[-*]\s*([^\n]*)(?:\n|$)){2,}/me", "'</p><ul>'.\$unorderedList('$0').'</ul><p>'", $this->content);
 	$this->content = preg_replace_callback("/(?:^ *[-*]\s*([^\n]*)(?:\n|$)){2,}/m", function($m) {
-		$unorderedList = create_function('$list',
-			'$list = preg_replace("/^ *[-*]\s*([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list));
-			return "$list";');
+		$unorderedList = function($list) {
+			$list = preg_replace("/^ *[-*]\s*([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list));
+            
+            return $list;
+        };
+        
 		return '</p><ul>'.$unorderedList($m[0]).'</ul><p>';
 	}, $this->content);
 
@@ -288,7 +293,7 @@ public function quotes()
 {
 	// Starting from the innermost quote, work our way to the outermost, replacing them one-by-one using a
 	// callback function. This is the only simple way to do nested quotes without a lexer.
-	$regexp = "/(.*?)\n?\[quote(?:=(.*?)(]?))?\]\n?(.*?)\n?\[\/quote\]\n{0,2}/ise";
+	$regexp = "/(.*?)\n?\[quote(?:=(.*?)(]?))?\]\n?(.*?)\n?\[\/quote\]\n{0,2}/is";
 	while (preg_match($regexp, $this->content)) {
 		//$this->content = preg_replace($regexp, "'$1</p>'.\$this->makeQuote('$4', '$2$3').'<p>'", $this->content);
 		$this->content = preg_replace_callback('/(.*?)\n?\[quote(?:=(.*?)(]?))?\]\n?(.*?)\n?\[\/quote\]\n{0,2}/is', function($m) {

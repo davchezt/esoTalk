@@ -3,6 +3,7 @@
 // This file is part of esoTalk. Please see the included license file for usage information.
 
 if (!defined("IN_ESOTALK")) exit;
+if (!defined("E_USER_DEPRECATED")) define('E_USER_DEPRECATED', E_USER_WARNING);
 
 /**
  * Bootstrap
