@@ -246,7 +246,7 @@ function sendEmail($to, $subject, $body)
  */
 function parseRequest($parts, $controllers)
 {
-	$c = strtolower(@$parts[0]);
+    $c = strtolower(@$parts[0]);
 	$method = "index";
 	$type = RESPONSE_TYPE_DEFAULT;
 

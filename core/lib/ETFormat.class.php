@@ -203,7 +203,7 @@ public function links()
 		array($this, "linksCallback"), $this->content);
 
 	// Convert email links.
-	// $this->content = preg_replace("/[\w-\.]+@([\w-]+\.)+[\w-]{2,4}/i", "<a href='mailto:$0' class='link-email'>$0</a>", $this->content);
+	$this->content = preg_replace("/[\w-\.]+@([\w-]+\.)+[\w-]{2,4}/i", "<a href='mailto:$0' class='link-email'>$0</a>", $this->content);
 
 	return $this;
 }
@@ -254,10 +254,6 @@ public function formatLink($url, $text = null)
 public function lists()
 {
 	// Convert ordered lists - 1. list item\n 2. list item.
-	// We do this by matching against 2 or more lines which begin with a number, passing them together to a
-	// callback function, and then wrapping each line with <li> tags.
-	//$orderedList = create_function('$list', '$list = preg_replace("/^[0-9]+[.)]\s+([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list)); return $list;');
-	//$this->content = preg_replace("/(?:^[0-9]+[.)]\s+([^\n]*)(?:\n|$)){2,}/me", "'</p><ol>'.\$orderedList('$0').'</ol><p>'", $this->content);
 	$this->content = preg_replace_callback("/(?:^[0-9]+[.)]\s+([^\n]*)(?:\n|$)){2,}/m", function($m) {
 		$orderedList = function($list) {
             $list = preg_replace("/^[0-9]+[.)]\s+([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list));
@@ -268,8 +264,6 @@ public function lists()
 	}, $this->content);
 
 	// Same goes for unordered lists, but with a - or a * instead of a number.
-	//$unorderedList = create_function('$list', '$list = preg_replace("/^ *[-*]\s*([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list)); return "$list";');
-	//$this->content = preg_replace("/(?:^ *[-*]\s*([^\n]*)(?:\n|$)){2,}/me", "'</p><ul>'.\$unorderedList('$0').'</ul><p>'", $this->content);
 	$this->content = preg_replace_callback("/(?:^ *[-*]\s*([^\n]*)(?:\n|$)){2,}/m", function($m) {
 		$unorderedList = function($list) {
 			$list = preg_replace("/^ *[-*]\s*([^\n]*)(?:\n|$)/m", "<li>$1</li>", trim($list));
@@ -295,8 +289,7 @@ public function quotes()
 	// callback function. This is the only simple way to do nested quotes without a lexer.
 	$regexp = "/(.*?)\n?\[quote(?:=(.*?)(]?))?\]\n?(.*?)\n?\[\/quote\]\n{0,2}/is";
 	while (preg_match($regexp, $this->content)) {
-		//$this->content = preg_replace($regexp, "'$1</p>'.\$this->makeQuote('$4', '$2$3').'<p>'", $this->content);
-		$this->content = preg_replace_callback('/(.*?)\n?\[quote(?:=(.*?)(]?))?\]\n?(.*?)\n?\[\/quote\]\n{0,2}/is', function($m) {
+		$this->content = preg_replace_callback($regexp, function($m) {
 			return $m[1].'</p>'.$this->makeQuote($m[4], $m[2].$m[3]).'<p>';
 		}, $this->content);
 	}
@@ -354,11 +347,6 @@ public function removeQuotes()
  */
 public function mentions()
 {
-	//$this->content = preg_replace(
-	//	'/(^|[\s,\.:\]])@([^\s[\]]{2,20})\b/ieu',
-	//	"'$1<a href=\''.URL('member/name/'.urlencode(str_replace('&nbsp;', ' ', '$2')), true).'\' class=\'link-member\'>@$2</a>'",
-	//	$this->content
-	//);
 	$this->content = preg_replace_callback(
 		'/(^|[\s,\.:\]])@([^\s[\]]{2,20})\b/iu', function($m) {
 			return $m[1] . '<a href="'.URL('member/name/'.urlencode(str_replace('&nbsp;', ' ', $m[2])), true).'" class="link-member">@'.$m[2].'</a>';
