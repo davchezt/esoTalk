@@ -28,7 +28,7 @@ public function action_index($conversationId = false, $year = false, $month = fa
 	if (!$this->allowed()) return;
 	
 	// Get the conversation.
-	$conversation = ET::conversationModel()->getById((int)$conversationId);
+	$conversation = ET::conversationModel()->getById((int)$conversationId); // return 1 from 1-welcome-to-esotalk
 
 	// Stop here with a 404 header if the conversation wasn't found.
 	if (!$conversation) {
